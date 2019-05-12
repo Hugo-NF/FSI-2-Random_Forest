@@ -5,6 +5,7 @@
 import json
 import pandas
 import numpy as np
+import os
 from sklearn.model_selection import KFold
 from sklearn.metrics import *
 from sklearn.ensemble import RandomForestClassifier
@@ -42,14 +43,51 @@ leaf_labels = np.array(list(map(int, leaf_dataset.values[:,0])))
 #             'verbose': 0, 'warm_start': False, 'class_weight': None}
 
 rf_args = []
-#   min sample split
-for i in range(2, 70):
-    rf_args.append(generate_classifier_args(*[100, 'gini', None, i, 1, 0.0, 'auto', None, 0.0, None, True, False, None, None, 0, False, None]))
 
-json_outfile = open('../results/json/{filename}.json'.format(filename='min_sample_split'), 'w+', encoding='UTF-8')
+
+# ---------- CREATE SAMPLES TO TEST HYPERPARAMS IN SOLATION --------------
+
+#   Number of estimators ():
+# for i in range(1,200,5):
+#     rf_args.append(generate_classifier_args(*[i, 'gini', None, 2, 1, 0.0, 'auto', None, 0.0, None, True, False, None, None, 0, False, None]))
+# json_outfile = open('../results/json/{filename}.json'.format(filename='n_estimators'), 'w+', encoding='UTF-8')
+
+# #   Min Sample Split (The best is using 2 or 3):
+# for i in range(2, 70):
+#     rf_args.append(generate_classifier_args(*[100, 'gini', None, i, 1, 0.0, 'auto', None, 0.0, None, True, False, None, None, 0, False, None]))
+# json_outfile = open('../results/json/{filename}.json'.format(filename='min_samples_split'), 'w+', encoding='UTF-8')
+#
+# #   Criterion (The best is using entropy)
+# rf_args.append(generate_classifier_args(*[100, 'gini', None, 3, 1, 0.0, 'auto', None, 0.0, None, True, False, None, None, 0, False, None]))
+# rf_args.append(generate_classifier_args(*[100, 'entropy', None, 3, 1, 0.0, 'auto', None, 0.0, None, True, False, None, None, 0, False, None]))
+# json_outfile = open('../results/json/{filename}.json'.format(filename='criterion'), 'w+', encoding='UTF-8')
+#
+# #   Max Depth (Generate too much flutuation, so use none and control with another kinds of pruning):
+# for i in range(2,90):
+#     rf_args.append(generate_classifier_args(*[100, 'entropy', i, 3, 1, 0.0, 'auto', None, 0.0, None, True, False, None, None, 0, False, None]))
+# json_outfile = open('../results/json/{filename}.json'.format(filename='max_depth'), 'w+', encoding='UTF-8')
+#
+# #   Min Samples Leaf (The best is 2 or 3)
+# for i in range(2,70):
+#     rf_args.append(generate_classifier_args(*[100, 'entropy', None, 3, i, 0.0, 'auto', None, 0.0, None, True, False, None, None, 0, False, None]))
+# json_outfile = open('../results/json/{filename}.json'.format(filename='min_samples_leaf'), 'w+', encoding='UTF-8')
+
+#   Min Weight Fraction Leaf (not used)
+
+#   Max Features (by theory the best is sqrt of samples)
+
+#   Max Leaf Nodes (not used)
+
+#   Min Impurity Decrease
+for i in np.arange(0,0.1, 0.0005):
+    rf_args.append(generate_classifier_args(*[100, 'entropy', None, 3, 3, 0.0, 'auto', None, i, None, True, False, None, None, 0, False, None]))
+json_outfile = open('../results/json/{filename}.json'.format(filename='min_impurity_decrease'), 'w+', encoding='UTF-8')
+
+
+# ---------- END CREATION OF SAMPLES TO TEST HYPERPARAMS --------------
+
 
 #   Creating the 10-folds for cross validation
-
 kf = KFold(n_splits=10, shuffle=True, random_state=13785)
 
 fold_index = 1
