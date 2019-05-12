@@ -53,8 +53,9 @@ json_outfile = open('../results/json/{filename}.json'.format(filename='min_sampl
 kf = KFold(n_splits=10, shuffle=True, random_state=13785)
 
 fold_index = 1
+json_obj = {}
 for train_index, test_index in kf.split(leaf_features):
-    json_obj = {'fold{index}'.format(index=fold_index): []}
+    json_obj['fold{index}'.format(index=fold_index)] = []
     features_train, features_test = leaf_features[train_index], leaf_features[test_index]
     labels_train, labels_test = leaf_labels[train_index], leaf_labels[test_index]
 
@@ -79,7 +80,7 @@ for train_index, test_index in kf.split(leaf_features):
                          }
                      }
                     })
-    json_outfile.write(json.dumps(json_obj))
     fold_index += 1
 
+json_outfile.write(json.dumps(json_obj, indent=True))
 json_outfile.close()
