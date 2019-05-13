@@ -48,30 +48,6 @@ rfc.set_classifier_args(rf_args)
 rfc.run_classifiers('min_samples_leaf')
 rf_args.clear()
 
-rfc.get_confusion_matrix("Confusion Matrix 1", {'n_estimators': 100, 'criterion': 'gini', 'max_depth': None,
-                'min_samples_split': 2, 'min_samples_leaf': 1,
-                'min_weight_fraction_leaf': 0.0, 'max_features': 'auto',
-                'max_leaf_nodes': None, 'min_impurity_decrease': 0.0,
-                'min_impurity_split': None, 'bootstrap' : True,
-                'oob_score': False, 'n_jobs': None, 'random_state': None,
-                'verbose': 0, 'warm_start': False, 'class_weight': None})
-
-rfc.get_confusion_matrix("Confusion Matrix 2", {'n_estimators': 100, 'criterion': 'entropy', 'max_depth': None,
-                'min_samples_split': 2, 'min_samples_leaf': 3,
-                'min_weight_fraction_leaf': 0.0, 'max_features': 'auto',
-                'max_leaf_nodes': None, 'min_impurity_decrease': 0.0,
-                'min_impurity_split': None, 'bootstrap' : True,
-                'oob_score': False, 'n_jobs': None, 'random_state': None,
-                'verbose': 0, 'warm_start': False, 'class_weight': None})
-
-rfc.get_confusion_matrix("Confusion Matrix 3", {'n_estimators': 100, 'criterion': 'gini', 'max_depth': 13,
-                'min_samples_split': 2, 'min_samples_leaf': 2,
-                'min_weight_fraction_leaf': 0.0, 'max_features': 'auto',
-                'max_leaf_nodes': None, 'min_impurity_decrease': 0.0,
-                'min_impurity_split': None, 'bootstrap' : True,
-                'oob_score': False, 'n_jobs': None, 'random_state': None,
-                'verbose': 0, 'warm_start': False, 'class_weight': None})
-
 rfc.get_confusion_matrix("Confusion Matrix", {'n_estimators': 100, 'criterion': 'entropy', 'max_depth': 13,
                 'min_samples_split': 2, 'min_samples_leaf': 2,
                 'min_weight_fraction_leaf': 0.0, 'max_features': 'auto',
@@ -80,11 +56,3 @@ rfc.get_confusion_matrix("Confusion Matrix", {'n_estimators': 100, 'criterion': 
                 'oob_score': False, 'n_jobs': None, 'random_state': None,
                 'verbose': 0, 'warm_start': False, 'class_weight': None})
 
-
-#   Min Weight Fraction Leaf (not used)
-
-#   Max Features (by theory the best is sqrt of samples)
-
-#   Max Leaf Nodes (not used)
-
-#   Min Impurity Decrease
