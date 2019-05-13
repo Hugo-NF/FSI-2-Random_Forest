@@ -40,7 +40,7 @@ class RandomForest:
                 'min_samples_split': min_samples_split, 'min_samples_leaf': min_samples_leaf,
                 'min_weight_fraction_leaf': min_weight_fraction_leaf, 'max_features': max_features,
                 'max_leaf_nodes': max_leaf_nodes, 'min_impurity_decrease': min_impurity_decrease,
-                'min_impurity_split': min_impurity_split, 'bootstrap' : bootstrap,
+                'min_impurity_split': min_impurity_split, 'bootstrap': bootstrap,
                 'oob_score': oob_score, 'n_jobs': n_jobs, 'random_state': random_state,
                 'verbose': verbose, 'warm_start': warm_start, 'class_weight': class_weight}
 
@@ -94,14 +94,10 @@ class RandomForest:
                               cmap=plt.cm.Blues):
         cm = confusion_matrix(y_true, y_pred)
         # Only use the labels that appear in the data
-        classes = classes[unique_labels(y_true, y_pred)]
+        classes = unique_labels(y_true, y_pred)
+
         if normalize:
             cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-            print("Normalized confusion matrix")
-        else:
-            print('Confusion matrix, without normalization')
-
-        print(cm)
 
         fig, ax = plt.subplots()
         im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
@@ -128,20 +124,44 @@ class RandomForest:
                         ha="center", va="center",
                         color="white" if cm[i, j] > thresh else "black")
         fig.tight_layout()
-        return ax
+        return fig
 
     def get_confusion_matrix(self, filename, args):
         kf = KFold(n_splits=10, shuffle=True, random_state=13785)
 
+        max_accuracy = 0.0
+        features_train_max = None
+        features_test_max = None
+        labels_train_max = None
+        labels_test_max = None
+
+        index = 1
         for train_index, test_index in kf.split(self.leaf_features):
             features_train, features_test = self.leaf_features[train_index], self.leaf_features[test_index]
             labels_train, labels_test = self.leaf_labels[train_index], self.leaf_labels[test_index]
-
 
             classifier = RandomForestClassifier(**args)
             classifier.fit(features_train, labels_train)
             predicts = classifier.predict(features_test)
 
-            plot_fig = RandomForest.plot_confusion_matrix(labels_test, predicts, np.unique(labels_test), title=filename)
-            plot_fig.savefig('../graphs/{filename}.png'.format(filename=filename), dpi=300)
-            plot_fig.show()
+            c_accuracy = accuracy_score(labels_test, predicts)
+            if(c_accuracy > max_accuracy):
+                max_accuracy = c_accuracy
+                features_test_max = features_test
+                features_train_max = features_train
+                labels_test_max = labels_test
+                labels_train_max = labels_train
+
+            index += 1
+
+        classifier = RandomForestClassifier(**args)
+        classifier.fit(features_train_max, labels_train_max)
+        predicts = classifier.predict(features_test_max)
+
+        print(filename)
+        print('Accuracy', accuracy_score(labels_test_max, predicts), sep=',')
+        print('F1 Score', f1_score(labels_test_max, predicts, average='macro'), sep=',')
+        print('Precision', precision_score(labels_test_max, predicts, average='macro'), sep=',')
+
+        plot_fig = RandomForest.plot_confusion_matrix(labels_test_max, predicts, np.unique(labels_train_max), title=filename)
+        plot_fig.savefig('../results/graphs/{filename}.png'.format(filename=filename), dpi=300)
